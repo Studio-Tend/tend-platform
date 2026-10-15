@@ -1,0 +1,13 @@
+packages:
+  - 'apps/*'
+  - 'packages/*'
+
+injectWorkspacePackages: true
+
+allowBuilds:
+  '@prisma/engines': true
+  '@prisma/client': true
+  '@scarf/scarf': false
+  prisma: true
+  unrs-resolver: true
+  core-js: false

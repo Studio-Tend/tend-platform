@@ -1,0 +1,505 @@
+/*
+  Marketing landing page. Ported from the standalone tend-site repo's
+  index.html. Colors, fonts, and motion now come from
+  `@tend/ui-tokens/theme.css` (imported in globals.css) instead of the
+  hand-copied hex values the static page carried, so the landing page and the
+  app can't drift apart.
+
+  Scoped under `.tend-site` so these class names don't leak, same as
+  `tend-flow.css`. The global reset, the `:focus-visible` ring, and the
+  `prefers-reduced-motion` block the static page defined are all in the token
+  base layer already and are not repeated here.
+*/
+
+.tend-site {
+  /* Off-token colors, kept local until they earn a place in tokens.ts.
+     Ratios measured against the background each one sits on. */
+  --site-error: #FFF0F0; /* 4.69:1 on deep shade — AA */
+
+  background: var(--color-cream);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  /* Tailwind's preflight sets an inherited line-height of 1.5. The landing
+     page was laid out against the browser default, so anything without an
+     explicit line-height (wordmark, eyebrows, buttons, footer) grows by a few
+     pixels under 1.5 and the vertical rhythm drifts. Restore the default here;
+     the explicit line-heights below still win where they are set. */
+  line-height: normal;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+.tend-site *,
+.tend-site *::before,
+.tend-site *::after {
+  box-sizing: border-box;
+}
+
+/* `:where()` keeps this at the same specificity the bare `a { color: inherit }`
+   had in the static page, so the link classes below still win. */
+:where(.tend-site) a {
+  color: inherit;
+}
+
+/* Smooth anchor scrolling for this page only. The reduced-motion block in the
+   token base layer overrides it back to `auto`. */
+html:has(.tend-site) {
+  scroll-behavior: smooth;
+}
+
+.tend-site__sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* ---------- Nav ---------- */
+
+.tend-site__nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 32px 6vw;
+}
+
+.tend-site__wordmark {
+  font-family: var(--font-serif);
+  font-optical-sizing: auto;
+  font-weight: 560;
+  font-size: 22px;
+  letter-spacing: -0.01em;
+}
+
+.tend-site__nav-link {
+  font-size: 14px;
+  color: var(--color-ink-soft);
+  text-decoration: none;
+  border: 1px solid var(--color-ink-soft);
+  padding: 8px 18px;
+  border-radius: var(--radius-full);
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.tend-site__nav-link:hover,
+.tend-site__nav-link:focus-visible {
+  background: var(--color-ink);
+  color: var(--color-cream);
+  border-color: var(--color-ink);
+}
+
+/* ---------- Hero ---------- */
+
+.tend-site__hero {
+  min-height: calc(100vh - 90px);
+  padding: 4vh 6vw 8vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.tend-site__eyebrow {
+  font-size: 13px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-deep-shade);
+  font-weight: 600;
+  margin-bottom: 28px;
+  opacity: 0;
+  animation: tend-site-fade-up 0.8s ease forwards;
+}
+
+.tend-site__title {
+  font-family: var(--font-serif);
+  font-optical-sizing: auto;
+  font-weight: 480;
+  font-size: clamp(40px, 7vw, 84px);
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+  max-width: 900px;
+  opacity: 0;
+  animation: tend-site-fade-up 0.9s ease 0.15s forwards;
+}
+
+.tend-site__title em {
+  font-style: italic;
+  color: var(--color-deep-shade);
+}
+
+.tend-site__subhead {
+  font-family: var(--font-sans);
+  font-weight: 400;
+  font-size: clamp(18px, 2.4vw, 26px);
+  color: var(--color-ink-soft);
+  max-width: 560px;
+  margin-top: 26px;
+  line-height: 1.5;
+  opacity: 0;
+  animation: tend-site-fade-up 0.9s ease 0.3s forwards;
+}
+
+.tend-site__scroll-cue {
+  margin-top: 56px;
+  font-family: var(--font-sans);
+  font-size: 18px;
+  color: var(--color-ink-soft);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  opacity: 0;
+  animation: tend-site-fade-up 0.9s ease 0.45s forwards;
+  text-decoration: none;
+}
+
+.tend-site__scroll-cue:hover,
+.tend-site__scroll-cue:focus-visible {
+  color: var(--color-ink);
+}
+
+.tend-site__scroll-cue:focus-visible {
+  outline-offset: 4px;
+}
+
+.tend-site__arrow {
+  display: inline-block;
+  animation: tend-site-bob 2.2s ease-in-out infinite;
+}
+
+@keyframes tend-site-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(6px);
+  }
+}
+
+@keyframes tend-site-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ---------- Thought ---------- */
+
+.tend-site__thought {
+  background: var(--color-door-blue);
+  min-height: 64vh;
+  padding: 12vh 6vw 14vh;
+  display: flex;
+  align-items: center;
+  scroll-margin-top: 24px;
+}
+
+.tend-site__thought-inner {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.tend-site__thought-copy {
+  width: max-content;
+  max-width: 100%;
+  text-align: left;
+}
+
+.tend-site__thought h2 {
+  font-family: var(--font-serif);
+  font-optical-sizing: auto;
+  font-weight: 420;
+  font-size: clamp(38px, 3.2vw, 46px);
+  line-height: 1.3;
+  letter-spacing: -0.02em;
+  color: var(--color-ink);
+}
+
+.tend-site__thought h2 > span {
+  display: block;
+}
+
+.tend-site__thought p {
+  /* FIX: was #3F4863, which measures 4.22:1 on door blue — under the 4.5:1
+     this size needs (18–22px regular is not "large" text). Ink is 8.36:1 and
+     is the only approved pairing on door blue; hierarchy comes from size. */
+  font-family: var(--font-sans);
+  font-size: clamp(18px, 1.8vw, 22px);
+  color: var(--color-ink);
+  font-weight: 400;
+  margin-top: 28px;
+  line-height: 1.5;
+}
+
+/* ---------- Philosophy ---------- */
+
+.tend-site__philosophy {
+  background: var(--color-cream);
+  padding: 14vh 6vw;
+}
+
+.tend-site__philosophy-inner {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.tend-site__philosophy-copy {
+  width: max-content;
+  max-width: min(640px, 100%);
+  text-align: left;
+}
+
+.tend-site__philosophy-eyebrow {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--color-deep-shade);
+  margin-bottom: 20px;
+}
+
+.tend-site__philosophy h2 {
+  font-family: var(--font-serif);
+  font-optical-sizing: auto;
+  font-weight: 460;
+  font-size: clamp(34px, 4vw, 56px);
+  line-height: 1.15;
+  letter-spacing: -0.025em;
+  color: var(--color-ink);
+}
+
+.tend-site__philosophy p {
+  margin-top: 30px;
+  font-size: 16px;
+  line-height: 1.75;
+  color: var(--color-ink-soft);
+}
+
+.tend-site__philosophy-note {
+  margin-top: 24px;
+  font-family: var(--font-serif);
+  font-size: clamp(18px, 1.8vw, 22px);
+  font-style: italic;
+  line-height: 1.5;
+  color: var(--color-deep-shade);
+}
+
+/* ---------- Waitlist ---------- */
+
+.tend-site__waitlist {
+  background: var(--color-deep-shade);
+  scroll-margin-top: 24px;
+  padding: 12vh 6vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.tend-site__waitlist h2 {
+  font-family: var(--font-serif);
+  font-weight: 480;
+  color: var(--color-cream);
+  font-size: clamp(28px, 3.5vw, 44px);
+  max-width: 820px;
+  line-height: 1.2;
+}
+
+.tend-site__waitlist p {
+  /* 0.92 measures 4.50:1 on deep shade — the lightest this can go and still
+     pass AA for body text. Do not lower it. */
+  color: rgba(250, 250, 248, 0.92);
+  max-width: 460px;
+  margin: 18px 0 44px;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.tend-site__form {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+  max-width: 440px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.tend-site__form input[type='email'] {
+  flex: 1;
+  min-width: 220px;
+  padding: 16px 20px;
+  border-radius: var(--radius-full);
+  border: none;
+  font-family: var(--font-sans);
+  font-size: 15px;
+  background: var(--color-cream);
+  color: var(--color-ink);
+  outline: none;
+}
+
+.tend-site__form input[type='email']::placeholder {
+  /* FIX: was #8A8FA8 at 3.06:1 on cream, which fails for 15px text. Ink soft
+     is 6.92:1 and is what the style guide specifies for placeholders. */
+  color: var(--color-ink-soft);
+}
+
+.tend-site__form input[type='email']:focus,
+.tend-site__form input[type='email']:focus-visible {
+  box-shadow: 0 0 0 3px rgba(250, 250, 248, 0.4);
+}
+
+.tend-site__form button {
+  padding: 16px 30px;
+  border-radius: var(--radius-full);
+  border: none;
+  background: var(--color-ink);
+  color: var(--color-cream);
+  font-family: var(--font-sans);
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition:
+    transform 0.15s ease,
+    background 0.2s ease;
+}
+
+.tend-site__form button:hover {
+  background: var(--color-ink-hover);
+}
+
+.tend-site__form button:focus-visible {
+  /* The deep shade ring from the base layer would disappear against this
+     section's background, so the ring goes cream here. */
+  outline: 2px solid var(--color-cream);
+  outline-offset: 3px;
+}
+
+.tend-site__form button:active {
+  transform: scale(0.97);
+}
+
+.tend-site__form button:disabled {
+  cursor: default;
+  opacity: 0.7;
+}
+
+.tend-site__form-note {
+  margin-top: 18px;
+  font-size: 13px;
+  /* FIX: was cream at 0.88 opacity, which blends to 4.27:1 on deep shade and
+     fails for 13px text. Full cream is 4.97:1. */
+  color: var(--color-cream);
+  min-height: 18px;
+}
+
+.tend-site__form-note--error {
+  color: var(--site-error);
+}
+
+.tend-site__form-note--success {
+  color: var(--color-cream);
+  font-weight: 500;
+}
+
+/* ---------- Footer ---------- */
+
+.tend-site__footer {
+  padding: 40px 6vw 48px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  font-size: 13px;
+  color: var(--color-ink-soft);
+}
+
+.tend-site__footer-links {
+  display: flex;
+  gap: 24px;
+}
+
+.tend-site__footer-links a {
+  text-decoration: none;
+  color: var(--color-ink-soft);
+  transition: color 0.2s ease;
+}
+
+.tend-site__footer-links a:hover,
+.tend-site__footer-links a:focus-visible {
+  color: var(--color-ink);
+}
+
+@media (min-height: 900px) {
+  .tend-site__hero {
+    min-height: calc(88vh - 90px);
+  }
+}
+
+/* ---------- Mobile ---------- */
+
+@media (max-width: 560px) {
+  .tend-site__nav {
+    padding: 24px 6vw;
+  }
+
+  .tend-site__hero {
+    min-height: calc(100vh - 74px);
+    padding: 4vh 6vw 8vh;
+  }
+
+  .tend-site__thought {
+    min-height: auto;
+    padding: 80px 6vw;
+  }
+
+  .tend-site__thought-copy,
+  .tend-site__philosophy-copy {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .tend-site__thought h2 {
+    font-size: clamp(28px, 7.5vw, 34px);
+  }
+
+  .tend-site__philosophy {
+    padding: 88px 6vw;
+  }
+
+  .tend-site__philosophy h2 {
+    font-size: clamp(30px, 8vw, 40px);
+  }
+
+  .tend-site__waitlist {
+    padding: 80px 6vw;
+  }
+
+  .tend-site__form {
+    flex-direction: column;
+  }
+
+  .tend-site__form button {
+    width: 100%;
+  }
+
+  .tend-site__footer {
+    flex-direction: column;
+    text-align: center;
+  }
+}

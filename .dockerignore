@@ -1,0 +1,12 @@
+node_modules
+.git
+.github
+**/.expo
+**/.DS_Store
+**/coverage
+**/dist
+apps/mobile
+apps/api/src/generated
+*.log
+.env
+.env.*

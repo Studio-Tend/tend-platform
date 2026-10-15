@@ -1,0 +1,2588 @@
+/*
+  Tend flow screens. Colors, type, space, radius, and motion come from
+  `@tend/ui-tokens/theme.css` (imported in globals.css). Scoped under
+  `.tend-flow` so these component classes don't leak.
+*/
+
+/*
+  Screen-reader-only labels are position:absolute, so they need a positioned
+  ancestor to measure from — otherwise they anchor to the viewport and can
+  push the page into empty cream. The screen, body, and checkbox below each
+  set `position: relative` to contain their own. Don't lock scrolling on
+  html/body to paper over it: that breaks reaching content at high zoom.
+*/
+.tend-flow {
+  background: var(--color-cream);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  height: 100dvh;
+  overflow: hidden;
+}
+
+.tend-flow *,
+.tend-flow *::before,
+.tend-flow *::after {
+  box-sizing: border-box;
+}
+
+.tend-flow__screen {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: calc(100% - var(--keyboard-inset, 0px));
+  overflow: hidden;
+}
+
+.tend-flow__column {
+  width: 100%;
+  max-width: var(--container-reading);
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.tend-flow__column--week {
+  max-width: var(--container-app);
+}
+
+.tend-flow__body {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--spacing) * 6);
+  padding: calc(var(--spacing) * 6);
+  padding-bottom: calc(var(--spacing) * 4);
+  -webkit-overflow-scrolling: touch;
+}
+.tend-flow__body--compact {
+  gap: calc(var(--spacing) * 4);
+  /* The day strip sticks to this scrollport. Top padding would leave a gap
+     above it where the agenda shows through, so the inset lives on the header. */
+  padding-top: 0;
+  /* Clears the pinned footer, including when the email panel is open above it. */
+  padding-bottom: calc(var(--spacing) * 6);
+}
+.tend-flow__body--compact > .tend-flow__header {
+  padding-top: calc(var(--spacing) * 6);
+}
+
+.tend-flow__sections {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--spacing) * 8);
+}
+
+/* Header / progress */
+
+.tend-flow__header {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--spacing) * 3);
+}
+
+.tend-flow__header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.tend-flow__wordmark {
+  font-family: var(--font-serif);
+  font-size: var(--text-statement);
+  line-height: var(--text-statement--line-height);
+  font-weight: 400;
+  color: var(--color-ink);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+}
+
+.tend-flow__back-link,
+.tend-flow__step-label {
+  font-family: var(--font-sans);
+  font-size: var(--text-body-sm);
+  line-height: var(--text-body-sm--line-height);
+  color: var(--color-ink-soft);
+}
+
+.tend-flow__back-link {
+  background: none;
+  border: none;
+  padding: 0 calc(var(--spacing) * 2);
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  text-decoration: none;
+}
+.tend-flow__back-link:hover {
+  color: var(--color-ink);
+}
+
+.tend-flow__progress-track {
+  width: 100%;
+  height: calc(var(--spacing) * 1);
+  background: var(--color-line);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+.tend-flow__progress-fill {
+  height: 100%;
+  width: 100%;
+  background: var(--color-deep-shade);
+  border-radius: var(--radius-full);
+  transform-origin: left center;
+  transition: transform var(--default-transition-duration) var(--ease-standard);
+}
+.tend-flow__progress-fill[data-progress='1'] {
+  transform: scaleX(0.2);
+}
+.tend-flow__progress-fill[data-progress='2'] {
+  transform: scaleX(0.4);
+}
+.tend-flow__progress-fill[data-progress='3'] {
+  transform: scaleX(0.6);
+}
+.tend-flow__progress-fill[data-progress='4'] {
+  transform: scaleX(0.8);
+}
+.tend-flow__progress-fill[data-progress='5'] {
+  transform: scaleX(1);
+}
+
+/* Titles */
+
+.tend-flow__title {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: var(--text-display);
+  line-height: var(--text-display--line-height);
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  color: var(--color-ink);
+}
+.tend-flow__subtitle {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-body);
+  line-height: var(--text-body--line-height);
+  color: var(--color-ink-soft);
+}
+.tend-flow__titles {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--spacing) * 3);
+}
+
+/* Form controls */
+
+.tend-flow__add-row {
+  display: flex;
+  gap: calc(var(--spacing) * 3);
+}
+
+.tend-flow__composer {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--spacing) * 4);
+}
+
+.tend-flow__focus-note {
+  min-height: calc(var(--text-body-sm--line-height) * 2);
+}
+
+.tend-input {
+  flex: 1;
+  height: calc(var(--spacing) * 12);
+  min-height: 44px;
+  padding: 0 calc(var(--spacing) * 4);
+  font-family: var(--font-sans);
+  font-size: var(--text-body);
+  line-height: var(--text-body--line-height);
+  color: var(--color-ink);
+  background: var(--color-white);
+  border: 1px solid var(--color-line-strong);
+  border-radius: var(--radius-md);
+  box-shadow: none;
+  appearance: none;
+}
+.tend-input::placeholder {
+  color: var(--color-ink-soft);
+  opacity: 1;
+}
+/* One focus ring. Pointer and keyboard both land here; native glow and
+   invalid shadows are cleared so they don't stack on this outline.
+   :user-invalid stays in its own rule so an unsupported selector can't
+   drop the focus styles above it. */
+.tend-input:focus,
+.tend-input:focus-visible {
+  outline: 2px solid var(--color-deep-shade);
+  outline-offset: 2px;
+  box-shadow: none;
+}
+.tend-input:invalid,
+.tend-input:user-invalid {
+  box-shadow: none;
+}
+.tend-input:disabled {
+  opacity: 0.6;
+}
+/* Same control as a single-line input, grown to fit wrapped text. */
+textarea.tend-input {
+  display: block;
+  flex: none;
+  width: 100%;
+  height: auto;
+  min-height: calc(var(--spacing) * 12);
+  padding: calc(var(--spacing) * 3) calc(var(--spacing) * 4);
+  resize: none;
+  overflow: hidden;
+  overflow-wrap: break-word;
+  field-sizing: content;
+}
+
+.tend-button-primary {
+  height: calc(var(--spacing) * 12);
+  padding: 0 calc(var(--spacing) * 6);
+  font-family: var(--font-sans);
+  font-size: var(--text-body);
+  line-height: var(--text-body--line-height);
+  font-weight: 500;
+  color: var(--color-white);
+  background: var(--color-deep-shade);
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.tend-button-primary:hover {
+  background: var(--color-ink);
+}
+.tend-button-primary:disabled,
+.tend-button-primary:disabled:hover {
+  color: var(--color-ink-soft);
+  background: var(--color-cream);
+  border: 1px solid var(--color-line-strong);
+  cursor: not-allowed;
+}
+.tend-button-primary[aria-busy='true'],
+.tend-button-primary[aria-busy='true']:hover,
+.tend-button-primary[aria-busy='true']:disabled,
+.tend-button-primary[aria-busy='true']:disabled:hover {
+  color: var(--color-white);
+  background: var(--color-deep-shade);
+  border: none;
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.tend-button-ghost {
+  position: relative;
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--color-ink-soft);
+  font-family: var(--font-sans);
+  font-size: var(--text-body-sm);
+  line-height: var(--text-body-sm--line-height);
+  font-weight: 500;
+  cursor: pointer;
+  text-align: left;
+  display: inline-flex;
+  align-items: center;
+}
+.tend-button-ghost:hover {
+  color: var(--color-ink);
+}
+.tend-button-ghost:disabled,
+.tend-button-ghost:disabled:hover {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.tend-button-secondary {
+  height: calc(var(--spacing) * 12);
+  padding: 0 calc(var(--spacing) * 6);
+  font-family: var(--font-sans);
+  font-size: var(--text-body);
+  line-height: var(--text-body--line-height);
+  font-weight: 500;
+  color: var(--color-ink);
+  background: var(--color-cream);
+  border: 1px solid var(--color-line-strong);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.tend-button-secondary:hover {
+  border-color: var(--color-ink);
+}
+
+.tend-icon-button {
+  position: relative;
+  width: calc(var(--spacing) * 7);
+  height: calc(var(--spacing) * 7);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  color: var(--color-ink-soft);
+  font-size: var(--text-body-lg);
+  line-height: 1;
+  cursor: pointer;
+  border-radius: var(--radius-full);
+}
+.tend-icon-button:hover,
+.tend-icon-button:focus-visible {
+  background: var(--color-line);
+}
+
+.tend-hint {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-body-sm);
+  line-height: var(--text-body-sm--line-height);
+  color: var(--color-ink-soft);
+}
+
+/* Cards / lists */
+
+.tend-flow__list {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--spacing) * 3);
+}
+
+.tend-drag-handle {
+  cursor: grab;
+  touch-action: none;
+}
+.tend-drag-handle--dragging {
+  cursor: grabbing;
+}
+/* The handle stays put, so once the pointer leaves it the cursor would fall
+   back to whatever is underneath. This has to beat those cursors for the drag. */
+html.tend-reordering,
+html.tend-reordering * {
+  cursor: grabbing !important;
+}
+.tend-reorder--dragging {
+  opacity: 0.45;
+}
+.tend-card.tend-reorder--over,
+.tend-action-row.tend-reorder--over {
+  border-color: var(--color-line-strong);
+  box-shadow: inset calc(var(--spacing) * 1) 0 0 var(--color-deep-shade);
+}
+.tend-section.tend-reorder--over > .tend-section__header {
+  background: var(--color-door-blue-wash);
+  border-radius: var(--radius-md);
+  box-shadow: inset calc(var(--spacing) * 1) 0 0 var(--color-deep-shade);
+}
+
+.tend-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: calc(var(--spacing) * 3);
+  padding: calc(var(--spacing) * 2) calc(var(--spacing) * 4);
+  background: var(--color-white);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-lg);
+}
+
+.tend-action-row {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--spacing) * 2);
+  padding: calc(var(--spacing) * 4);
+  background: var(--color-white);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-md);
+}
+.tend-action-row--room {
+  background: var(--color-door-blue-wash);
+  border: none;
+  border-radius: var(--radius-lg);
+}
+.tend-action-row--room.tend-reorder--over {
+  background: var(--color-white);
+}
+.tend-action-row__main {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--spacing) * 3);
+}
+.tend-action-row--room .tend-action-row__main,
+.tend-action-row__main:has(.tend-action-row__stack) {
+  align-items: flex-start;
+}
+.tend-action-row__stack {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: calc(var(--spacing) * 2);
+  min-width: 0;
+}
+.tend-action-row__line {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--spacing) * 3);
+  min-width: 0;
+}
+
+.tend-check {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  margin: calc(var(--spacing) * -2);
+  cursor: pointer;
+}
+
+.tend-checkbox {
+  width: calc(var(--spacing) * 5);
+  height: calc(var(--spacing) * 5);
+  min-width: calc(var(--spacing) * 5);
+  accent-color: var(--color-deep-shade);
+  cursor: pointer;
+}
+
+.tend-editable-text,
+.tend-editable-title {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: none;
+  border-bottom: 1px dashed transparent;
+  background: none;
+  cursor: pointer;
+  text-align: left;
+  color: var(--color-ink);
+}
+.tend-editable-text {
+  font-family: var(--font-sans);
+  font-size: var(--text-body);
+  line-height: var(--text-body--line-height);
+  font-weight: 400;
+}
+.tend-editable-text:hover,
+.tend-editable-title:hover {
+  border-bottom-color: var(--color-line-strong);
+}
+.tend-editable-title {
+  font-family: var(--font-serif);
+  font-size: var(--text-statement);
+  line-height: var(--text-statement--line-height);
+  font-weight: 500;
+}
+
+.tend-edit-input {
+  flex: 1;
+  min-width: 0;
+  min-height: 44px;
+  font-family: var(--font-sans);
+  font-size: var(--text-body);
+  line-height: var(--text-body--line-height);
+  color: var(--color-ink);
+  border: none;
+  border-bottom: 2px solid var(--color-deep-shade);
+  background: transparent;
+  padding: 0;
+  border-radius: 0;
+}
+.tend-edit-input--title {
+  font-family: var(--font-serif);
+  font-size: var(--text-statement);
+  line-height: var(--text-statement--line-height);
+  font-weight: 500;
+}
+
+/* Section header (Prioritize) */
+
+.tend-section {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--spacing) * 3);
+}
+.tend-section__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: calc(var(--spacing) * 3);
+}
+.tend-section__identity {
+  display: flex;
+  align-items: flex-start;
+  gap: calc(var(--spacing) * 2);
+  flex: 1;
+  min-width: 0;
+}
+.tend-section__identity .tend-focus-dot {
+  margin-top: calc((var(--text-statement--line-height) - var(--spacing) * 2) / 2);
+}
+.tend-section__meta {
+  font-family: var(--font-sans);
+  font-size: var(--text-body-sm);
+  line-height: var(--text-body-sm--line-height);
+  color: var(--color-ink-soft);
+  white-space: nowrap;
+}
+
+/* Label pill (Actions breadcrumb) */
+
+.tend-pill {
+  display: inline-flex;
+  align-self: flex-start;
+  padding: calc(var(--spacing) * 1) calc(var(--spacing) * 3);
+  background: var(--color-door-blue-wash);
+  color: var(--color-ink);
+  border-radius: var(--radius-full);
+  font-family: var(--font-sans);
+  font-size: var(--text-label);
+  line-height: var(--text-label--line-height);
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* Time scheduling */
+
+.tend-time-add {
+  align-self: flex-start;
+  margin-left: calc(var(--spacing) * 8);
+}
+.tend-action-row--room .tend-time-add {
+  margin-left: 0;
+}
+
+.tend-scheduled-pill {
+  position: relative;
+  align-self: flex-start;
+  margin-left: calc(var(--spacing) * 8);
+  display: inline-flex;
+  align-items: center;
+  gap: calc(var(--spacing) * 2);
+  background: var(--color-door-blue-wash);
+  color: var(--color-ink);
+  border: none;
+  border-radius: var(--radius-full);
+  padding: calc(var(--spacing) * 1) calc(var(--spacing) * 3);
+  font-family: var(--font-sans);
+  font-size: var(--text-body-sm);
+  line-height: var(--text-body-sm--line-height);
+  cursor: pointer;
+}
+.tend-action-row--room .tend-scheduled-pill {
+  margin-left: 0;
+  background: var(--color-white);
+}
+
+.tend-scheduler {
+  margin-left: calc(var(--spacing) * 8);
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--spacing) * 2);
+  padding: calc(var(--spacing) * 3);
+  background: var(--color-cream);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-md);
+}
+.tend-action-row--room .tend-scheduler,
+.tend-action-row__stack .tend-time-add,
+.tend-action-row__stack .tend-scheduled-pill,
+.tend-action-row__stack .tend-scheduler {
+  margin-left: 0;
+}
+.tend-room-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: calc(var(--spacing) * 4);
+}
+.tend-room-controls > .tend-scheduler {
+  flex: 1 0 100%;
+}
+.tend-intention-pill {
+  max-width: 100%;
+  white-space: normal;
+  text-align: left;
+}
+.tend-scheduler__label {
+  font-family: var(--font-sans);
+  font-size: var(--text-caption);
+  line-height: var(--text-caption--line-height);
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-ink-soft);
+}
+.tend-scheduler__row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(var(--spacing) * 2);
+}
+
+.tend-chip {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: calc(var(--spacing) * 2);
+  padding: calc(var(--spacing) * 1) calc(var(--spacing) * 3);
+  border-radius: var(--radius-full);
+  font-family: var(--font-sans);
+  font-size: var(--text-body-sm);
+  line-height: var(--text-body-sm--line-height);
+  cursor: pointer;
+  background: var(--color-white);
+  color: var(--color-ink);
+  border: 1px solid var(--color-line-strong);
+}
+
+/*
+  Compact controls keep a 44×44 tap target without growing layout.
+  The pseudo-element is part of the button, so it stays clickable.
+*/
+.tend-chip::after,
+.tend-scheduled-pill::after,
+.tend-button-ghost::after,
+.tend-icon-button::after,
+.tend-editable-text::after,
+.tend-editable-title::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: max(100%, 44px);
+  height: max(100%, 44px);
+  transform: translate(-50%, -50%);
+}
+.tend-chip--day {
+  flex-direction: column;
+  gap: 0;
+}
+.tend-chip__line {
+  display: inline-flex;
+  align-items: center;
+  gap: calc(var(--spacing) * 2);
+}
+.tend-chip__dot {
+  width: calc(var(--spacing) * 1);
+  height: calc(var(--spacing) * 1);
+  border-radius: var(--radius-full);
+  background: currentColor;
+}
+.tend-chip__dot--empty {
+  visibility: hidden;
+}
+.tend-chip--chosen {
+  border-color: var(--color-ink);
+  font-weight: 600;
+}
+.tend-chip--selected {
+  background: var(--color-door-blue);
+  border-color: var(--color-door-blue);
+}
+.tend-chip__check {
+  font-size: var(--text-caption);
+}
+
+.tend-scheduler__planned {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--spacing) * 2);
+  margin-top: calc(var(--spacing) * 2);
+}
+.tend-scheduler__planned-card {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--spacing) * 2);
+  padding: calc(var(--spacing) * 3);
+  background: var(--color-door-blue-wash);
+  border-radius: var(--radius-lg);
+}
+.tend-scheduler__planned-label,
+.tend-scheduler__planned-note {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-body-sm);
+  line-height: var(--text-body-sm--line-height);
+  color: var(--color-ink-soft);
+}
+.tend-scheduler__planned-items {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--spacing) * 2);
+}
+.tend-scheduler__planned-items li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: calc(var(--spacing) * 3);
+  min-height: 44px;
+  font-family: var(--font-sans);
+  font-size: var(--text-body);
+  line-height: var(--text-body--line-height);
+  color: var(--color-ink);
+}
+.tend-scheduler__planned-plan {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.tend-scheduler__planned-time {
+  font-size: var(--text-body-sm);
+  line-height: var(--text-body-sm--line-height);
+  color: var(--color-ink-soft);
+}
+
+/* Your week — agenda rows (seven columns on wide screens) */
+
+.tend-week__heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: calc(var(--spacing) * 4);
+}
+
+.tend-week__heading .tend-flow__title {
+  font-size: var(--text-title);
+  line-height: var(--text-title--line-height);
+  letter-spacing: -0.01em;
+}
+
+.tend-week__heading-text {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--spacing) * 2);
+  min-width: 0;
+}
+
+.tend-week__edit {
+  flex-shrink: 0;
+  min-height: 44px;
+  white-space: nowrap;
+  font-size: var(--text-body-sm);
+  line-height: var(--text-body-sm--line-height);
+  font-weight: 500;
+  color: var(--color-deep-shade);
+}
+
+.tend-week__edit:hover {
+  text-decoration: underline;
+}
+
+.tend-week__intro {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: calc(var(--spacing) * 2);
+}
+
+.tend-week__intro .tend-flow__subtitle {
+  min-width: 0;
+  font-size: var(--text-body-lg);
+  line-height: var(--text-body-lg--line-height);
+}
+
+.tend-week__secondary {
+  display: flex;
+}
+/* The compact body gap separates sections. In edit view the link sits on the schedule. */
+.tend-week__secondary--edit {
+  margin-top: calc(var(--spacing) * -4);
+}
+
+.tend-week__start-over {
+  flex-shrink: 0;
+  min-height: 44px;
+  font-size: var(--text-body-sm);
+  line-height: var(--text-body-sm--line-height);
+  font-weight: 400;
+}
+
+.tend-week__hint {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-caption);
+  line-height: var(--text-caption--line-height);
+  color: var(--color-ink-soft);
+}
+.tend-week__start-over:hover {
+  text-decoration: underline;
+}
+
+.tend-week__range {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-label);
+  line-height: var(--text-label--line-height);
+  letter-spacing: 0.08em;
+  font-weight: 500;
+  text-transform: uppercase;
+  color: var(--color-ink-soft);
+}
+
+.tend-week-read {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-lg);
+  /* Clips the day columns to the rounded card. overflow other than visible
+     makes this flex item's min-height 0, so it would shrink and hide the
+     rest of the week. Keep its content height so the screen can scroll. */
+  overflow: hidden;
+  flex-shrink: 0;
+  background: var(--color-cream);
+}
+
+.tend-week-read__day {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  border-right: 1px solid var(--color-line);
+}
+
+.tend-week-read__day:last-child {
+  border-right: 0;
+}
+
+.tend-week-read__date {
+  display: flex;
+  flex-direction: column;
+  padding: calc(var(--spacing) * 3) calc(var(--spacing) * 3) calc(var(--spacing) * 2);
+  border-bottom: 1px solid var(--color-line);
+}
+
+.tend-week-read__events {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--spacing) * 6);
+  padding: calc(var(--spacing) * 3);
+  min-width: 0;
+}
+
+.tend-week-read__lane {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--spacing) * 3);
+  min-width: 0;
+}
+
+.tend-week-read__item {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  margin: 0;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.tend-week-read__item--life {
+  align-self: flex-start;
+  max-width: 100%;
+  padding: calc(var(--spacing) * 2);
+  border-radius: var(--radius-md);
+  background: var(--color-door-blue-wash);
+}
+
+.tend-week-read__open {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--spacing) * 3);
+  /* Body gap is space-4; this brings the break above the list to space-8. */
+  margin-top: calc(var(--spacing) * 4);
+}
+
+.tend-week-read__open-items {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--spacing) * 3);
+}
+
+.tend-week-layout {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: calc(var(--spacing) * 4);
+  min-width: 0;
+  overflow-x: auto;
+}
+
+.tend-week-matrix {
+  flex: 1;
+  min-width: min-content;
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--spacing) * 2);
+}
+
+.tend-week-matrix__head,
+.tend-week-matrix__row {
+  display: grid;
+  grid-template-columns: calc(var(--spacing) * 22) repeat(7, minmax(calc(var(--spacing) * 35), 1fr));
+  gap: calc(var(--spacing) * 2);
+  align-items: start;
+}
+
+.tend-week-matrix__head {
+  padding-bottom: calc(var(--spacing) * 2);
+  border-bottom: 1px solid var(--color-line);
+}
+
+.tend-week-matrix__head .tend-week__date {
+  margin-bottom: 0;
+}
+
+.tend-week-matrix__time {
+  margin: 0;
+  padding-top: calc(var(--spacing) * 2);
+  font-family: var(--font-sans);
+  font-size: var(--text-caption);
+  line-height: var(--text-caption--line-height);
+  letter-spacing: 0.08em;
+  font-weight: 500;
+  text-transform: uppercase;
+  color: var(--color-ink-soft);
+}
+
+.tend-week-cell {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--spacing) * 1);
+  min-width: 0;
+  min-height: calc(var(--spacing) * 16);
+  padding: calc(var(--spacing) * 1);
+  border-radius: var(--radius-md);
+  background: var(--color-door-blue-wash);
+}
+
+.tend-week-cell--drop {
+  box-shadow: inset 0 0 0 2px var(--color-ink);
+}
+
+.tend-week-drag-pill {
+  position: fixed;
+  left: 50%;
+  bottom: calc(var(--spacing) * 24);
+  z-index: 30;
+  margin: 0;
+  padding: calc(var(--spacing) * 2) calc(var(--spacing) * 4);
+  transform: translateX(-50%);
+  border-radius: var(--radius-full);
+  background: var(--color-ink);
+  color: var(--color-white);
+  font-family: var(--font-sans);
+  font-size: var(--text-body-sm);
+  line-height: var(--text-body-sm--line-height);
+  pointer-events: none;
+}
+
+.tend-week {
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+
+.tend-week__day {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: calc(var(--spacing) * 4) calc(var(--spacing) * 3);
+  background: var(--color-cream);
+  border-right: 1px solid var(--color-line);
+}
+.tend-week__day:last-child {
+  border-right: 0;
+}
+
+.tend-week__date {
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  margin-bottom: calc(var(--spacing) * 4);
+}
+.tend-week__weekday {
+  font-family: var(--font-sans);
+  font-size: var(--text-label);
+  line-height: var(--text-label--line-height);
+  letter-spacing: 0.08em;
+  font-weight: 500;
+  text-transform: uppercase;
+  color: var(--color-ink-soft);
+}
+.tend-week__date-num {
+  font-family: var(--font-sans);
+  font-size: var(--text-statement);
+  line-height: var(--text-statement--line-height);
+  font-weight: 500;
+  color: var(--color-ink);
+}
+.tend-week__events {
+  min-width: 0;
+  flex: 1;
+}
+
+.tend-week__lane {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--spacing) * 2);
+  min-width: 0;
+  padding: calc(var(--spacing) * 1) 0 calc(var(--spacing) * 3);
+  border-radius: var(--radius-md);
+}
+.tend-week__lane--drop {
+  background: var(--color-door-blue-wash);
+  box-shadow: inset 0 0 0 2px var(--color-ink);
+  padding: calc(var(--spacing) * 2);
+}
+
+.tend-week__lane-label {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-label);
+  line-height: var(--text-label--line-height);
+  letter-spacing: 0.08em;
+  font-weight: 500;
+  text-transform: uppercase;
+  color: var(--color-ink-soft);
+}
+.tend-week__item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  column-gap: calc(var(--spacing) * 2);
+  row-gap: calc(var(--spacing) * 1);
+  width: 100%;
+  min-height: 44px;
+  padding: calc(var(--spacing) * 2);
+  border: 1px solid var(--color-line-strong);
+  border-radius: var(--radius-md);
+  background: var(--color-cream);
+  text-align: left;
+  cursor: grab;
+  font-family: var(--font-sans);
+}
+/* Keeps a card's tooltip above the neighboring cards. */
+.tend-week__item:hover,
+.tend-week__item:focus-within {
+  position: relative;
+  z-index: 2;
+}
+.tend-week__item:active {
+  cursor: grabbing;
+}
+.tend-week__item--life {
+  background: var(--color-door-blue-wash);
+}
+.tend-week__item--lifted {
+  border-style: dashed;
+  background: transparent;
+  color: transparent;
+}
+.tend-week__item--lifted * {
+  color: transparent;
+}
+.tend-week__item-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 0;
+  flex: 1;
+}
+.tend-week__item-lead {
+  position: relative;
+  grid-column: 1;
+  grid-row: 1;
+  min-width: 0;
+}
+/*
+  Covers the title for keyboard and pointer. The pencil sits in the goal row,
+  so this overlay does not include it.
+*/
+.tend-week__item-open {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: grab;
+}
+.tend-week__grip,
+.tend-week__chevron {
+  position: relative;
+  z-index: 1;
+  grid-column: 2;
+  grid-row: 1;
+  align-self: end;
+  justify-self: end;
+  flex-shrink: 0;
+  color: var(--color-ink-soft);
+}
+.tend-week__grip {
+  display: flex;
+  opacity: 0;
+}
+.tend-week__item:hover .tend-week__grip,
+.tend-week__item:focus-within .tend-week__grip,
+.tend-week__item--lifted .tend-week__grip {
+  opacity: 1;
+}
+.tend-week__chevron {
+  font-size: var(--text-body-lg);
+  line-height: 1;
+}
+
+.tend-week__item-title {
+  min-width: 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-body);
+  line-height: var(--text-body--line-height);
+  font-weight: 500;
+  color: var(--color-ink);
+  word-break: normal;
+  overflow-wrap: break-word;
+}
+.tend-week__item-meta {
+  grid-column: 1;
+  grid-row: 2;
+  min-width: 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-body-sm);
+  line-height: var(--text-body-sm--line-height);
+  font-weight: 400;
+  color: var(--color-ink-soft);
+  word-break: normal;
+  overflow-wrap: break-word;
+}
+/*
+  The pencil shares the goal's row and the drag handle's column, so it lines
+  up with the goal without taking space from the name. It sits on the goal's
+  last line, and its box matches that line so the card does not grow.
+  The ::before is the 44px tap target.
+*/
+.tend-week__edit-goal {
+  position: relative;
+  display: flex;
+  grid-column: 2;
+  grid-row: 2;
+  align-self: end;
+  justify-self: end;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+  width: calc(var(--spacing) * 4);
+  height: var(--text-body-sm--line-height);
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--color-ink-soft);
+  line-height: var(--text-body-sm--line-height);
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+}
+.tend-week__edit-goal::before {
+  content: '';
+  position: absolute;
+  width: calc(var(--spacing) * 11);
+  height: calc(var(--spacing) * 11);
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+.tend-week__item:hover .tend-week__edit-goal,
+.tend-week__edit-goal:focus-visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+/*
+  Sits above the pencil or the drag handle. The hovered control stacks above
+  its sibling so the tip covers that icon instead of letting it show through.
+*/
+.tend-week__tip {
+  position: absolute;
+  bottom: calc(100% + var(--spacing) * 1);
+  left: 50%;
+  z-index: 1;
+  transform: translateX(-50%);
+  padding: calc(var(--spacing) * 1) calc(var(--spacing) * 2);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-sm);
+  background: var(--color-white);
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--color-ink) 18%, transparent);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-size: var(--text-caption);
+  line-height: var(--text-caption--line-height);
+  font-weight: 400;
+  white-space: nowrap;
+  visibility: hidden;
+  pointer-events: none;
+}
+.tend-week__edit-goal:hover,
+.tend-week__edit-goal:focus-visible,
+.tend-week__grip:hover {
+  z-index: 3;
+}
+.tend-week__edit-goal:hover .tend-week__tip,
+.tend-week__edit-goal:focus-visible .tend-week__tip,
+.tend-week__grip:hover .tend-week__tip {
+  visibility: visible;
+}
+
+.tend-week__empty {
+  font-family: var(--font-sans);
+  font-size: var(--text-caption);
+  line-height: var(--text-caption--line-height);
+  color: var(--color-ink-soft);
+  font-style: italic;
+}
+
+.tend-room-marker {
+  color: var(--color-ink-soft);
+  font-size: var(--text-caption);
+  line-height: 1;
+}
+
+.tend-week-unscheduled {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--spacing) * 2);
+  width: calc(var(--spacing) * 48);
+  flex-shrink: 0;
+  padding: calc(var(--spacing) * 3);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-lg);
+  background: var(--color-cream);
+}
+.tend-week-unscheduled--stacked {
+  width: auto;
+  margin-top: calc(var(--spacing) * 4);
+}
+.tend-week-unscheduled--over {
+  box-shadow: inset 0 0 0 2px var(--color-ink);
+}
+.tend-week-unscheduled__heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: calc(var(--spacing) * 2);
+}
+.tend-week-unscheduled__label {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-label);
+  line-height: var(--text-label--line-height);
+  letter-spacing: 0.08em;
+  font-weight: 500;
+  text-transform: uppercase;
+  color: var(--color-ink-soft);
+}
+.tend-week-unscheduled__count {
+  font-family: var(--font-sans);
+  font-size: var(--text-caption);
+  line-height: var(--text-caption--line-height);
+  color: var(--color-ink-soft);
+}
+.tend-week-unscheduled__items {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--spacing) * 2);
+}
+.tend-week-unscheduled__hint,
+.tend-week-unscheduled__drop {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-body-sm);
+  line-height: var(--text-body-sm--line-height);
+  color: var(--color-ink-soft);
+}
+.tend-week-unscheduled__drop {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: calc(var(--spacing) * 2);
+  border: 1px dashed var(--color-line-strong);
+  border-radius: var(--radius-md);
+  text-align: center;
+}
+.tend-week-unscheduled__drop--over {
+  background: var(--color-door-blue-wash);
+  color: var(--color-ink);
+}
+
+/* Narrow week: one day, with the weekday strip stuck to the scrollport. */
+
+.tend-week-strip {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  flex-shrink: 0;
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: calc(var(--spacing) * 1);
+  margin-inline: calc(var(--spacing) * -6);
+  padding: calc(var(--spacing) * 2) calc(var(--spacing) * 6) calc(var(--spacing) * 3);
+  background: var(--color-cream);
+}
+
+.tend-week-strip__day {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: calc(var(--spacing) * 1) 0;
+  border: none;
+  border-radius: var(--radius-lg);
+  background: transparent;
+  color: var(--color-ink);
+  cursor: pointer;
+  font-family: var(--font-sans);
+}
+
+.tend-week-strip__day[aria-selected='true'] {
+  background: var(--color-door-blue);
+}
+
+.tend-week-strip__weekday {
+  font-size: var(--text-label);
+  line-height: var(--text-label--line-height);
+  letter-spacing: 0.08em;
+  font-weight: 500;
+  text-transform: uppercase;
+  color: var(--color-deep-shade);
+}
+
+.tend-week-strip__date {
+  font-size: var(--text-body);
+  line-height: var(--text-body--line-height);
+  font-weight: 500;
+}
+
+.tend-week-strip__day[aria-selected='true'] .tend-week-strip__weekday,
+.tend-week-strip__day[aria-selected='true'] .tend-week-strip__date {
+  color: var(--color-ink);
+  font-weight: 600;
+}
+
+.tend-week-strip__dot {
+  width: calc(var(--spacing) * 1);
+  height: calc(var(--spacing) * 1);
+  border-radius: var(--radius-full);
+  background: currentColor;
+}
+
+.tend-week-strip__dot--empty {
+  visibility: hidden;
+}
+
+.tend-week__day-heading {
+  margin: 0 0 calc(var(--spacing) * 4);
+  font-family: var(--font-serif);
+  font-size: var(--text-heading);
+  line-height: var(--text-heading--line-height);
+  font-weight: 400;
+  color: var(--color-ink);
+}
+
+@media (max-width: 760px) {
+  .tend-week__heading {
+    align-items: flex-start;
+  }
+  .tend-week--single .tend-week__day {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    border: none;
+    padding: 0;
+    background: transparent;
+  }
+  .tend-week--single .tend-week__item,
+  .tend-week-unscheduled .tend-week__item {
+    scroll-margin-top: calc(var(--spacing) * 20);
+  }
+  .tend-week__edit-goal {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .tend-week__empty {
+    font-size: var(--text-body);
+    line-height: var(--text-body--line-height);
+  }
+}
+
+@media (hover: none), (pointer: coarse) {
+  .tend-week__edit-goal {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
+/* Bottom action bar — full viewport width; controls stay in the content column */
+
+.tend-flow__footer {
+  align-self: stretch;
+  width: 100%;
+  flex-shrink: 0;
+  display: flex;
+  justify-content: center;
+  background: var(--color-cream);
+  z-index: 10;
+}
+.tend-flow__footer-inner {
+  width: 100%;
+  max-width: var(--container-reading);
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: calc(var(--spacing) * 4);
+  padding: calc(var(--spacing) * 4) calc(var(--spacing) * 6);
+  padding-bottom: max(calc(var(--spacing) * 4), env(safe-area-inset-bottom));
+}
+.tend-flow__footer--week {
+  position: relative;
+  border-top: 1px solid var(--color-line);
+}
+.tend-flow__footer--week .tend-flow__footer-inner {
+  flex-shrink: 0;
+  flex-wrap: nowrap;
+}
+.tend-flow__footer--week .tend-flow__footer-inner:has(.tend-send-week__form) {
+  justify-content: flex-end;
+}
+.tend-flow__footer--week .tend-flow__back-link {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.tend-undo-toast {
+  position: absolute;
+  left: 50%;
+  bottom: 100%;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  gap: calc(var(--spacing) * 4);
+  width: max-content;
+  max-width: calc(100% - calc(var(--spacing) * 8));
+  margin-bottom: calc(var(--spacing) * 3);
+  padding: calc(var(--spacing) * 3) calc(var(--spacing) * 4);
+  transform: translateX(-50%);
+  border-radius: var(--radius-md);
+  background: var(--color-ink);
+  color: var(--color-white);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--color-ink) 18%, transparent);
+}
+
+.tend-undo-toast__message {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-body-sm);
+  line-height: var(--text-body-sm--line-height);
+  font-weight: 400;
+}
+
+.tend-undo-toast__undo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  margin-block: calc(var(--spacing) * -3);
+  padding: 0;
+  border: none;
+  background: none;
+  color: inherit;
+  font-family: var(--font-sans);
+  font-size: var(--text-body-sm);
+  line-height: var(--text-body-sm--line-height);
+  font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.tend-undo-toast__undo:focus-visible {
+  outline: 2px solid var(--color-white);
+  outline-offset: 2px;
+}
+.tend-flow__footer--split .tend-flow__footer-inner {
+  justify-content: space-between;
+}
+
+/* Start-over confirmation. The dialog element is a transparent full-screen
+   host so a click on the dimmed page dismisses; the card is the surface. */
+.tend-dialog {
+  width: 100%;
+  max-width: none;
+  height: 100%;
+  max-height: none;
+  margin: 0;
+  padding: calc(var(--spacing) * 6);
+  border: none;
+  background: transparent;
+  color: var(--color-ink);
+}
+.tend-dialog[open] {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.tend-dialog::backdrop {
+  background: color-mix(in srgb, var(--color-ink) 40%, transparent);
+}
+.tend-dialog__card {
+  position: relative;
+  width: 100%;
+  max-width: calc(var(--spacing) * 96);
+  padding: calc(var(--spacing) * 10) calc(var(--spacing) * 8) calc(var(--spacing) * 8);
+  background: var(--color-cream);
+  border-radius: var(--radius-lg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: calc(var(--spacing) * 4);
+  text-align: center;
+}
+.tend-dialog__close {
+  position: absolute;
+  top: calc(var(--spacing) * 3);
+  right: calc(var(--spacing) * 3);
+}
+.tend-dialog__title {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: var(--text-heading);
+  line-height: var(--text-heading--line-height);
+  font-weight: 400;
+  color: var(--color-ink);
+}
+.tend-dialog__body {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-body);
+  line-height: var(--text-body--line-height);
+  color: var(--color-ink-soft);
+}
+.tend-dialog__actions {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--spacing) * 3);
+  width: 100%;
+  margin-top: calc(var(--spacing) * 2);
+}
+.tend-dialog__actions .tend-button-primary,
+.tend-dialog__actions .tend-button-secondary {
+  width: 100%;
+}
+
+/* Make-room intention. Same cream dialog as the day/time editor, with one
+   choice for what the activity would bring into the week. */
+.tend-intention {
+  text-align: left;
+}
+.tend-intention__card {
+  width: 100%;
+  max-width: calc(var(--spacing) * 120);
+  padding: calc(var(--spacing) * 6);
+  background: var(--color-cream);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-lg);
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: calc(var(--spacing) * 4);
+}
+.tend-intention__activity {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--spacing) * 2);
+}
+.tend-intention__eyebrow {
+  font-family: var(--font-sans);
+  font-size: var(--text-caption);
+  line-height: var(--text-caption--line-height);
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-ink-soft);
+}
+.tend-intention__name {
+  margin: 0;
+  padding: calc(var(--spacing) * 3) calc(var(--spacing) * 4);
+  background: var(--color-white);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-lg);
+  font-family: var(--font-sans);
+  font-size: var(--text-body);
+  line-height: var(--text-body--line-height);
+  color: var(--color-ink);
+}
+.tend-intention__question {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-body-lg);
+  line-height: var(--text-body-lg--line-height);
+  font-weight: 500;
+  color: var(--color-ink);
+}
+.tend-intention__options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: calc(var(--spacing) * 2);
+}
+.tend-intention__option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: calc(var(--spacing) * 2);
+  min-height: 44px;
+  padding: calc(var(--spacing) * 3) calc(var(--spacing) * 4);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-line-strong);
+  background: var(--color-white);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-size: var(--text-body);
+  line-height: var(--text-body--line-height);
+  text-align: left;
+  cursor: pointer;
+}
+.tend-intention__option:focus {
+  outline: none;
+}
+.tend-intention__option:focus-visible {
+  outline: 2px solid var(--color-deep-shade);
+  outline-offset: 2px;
+}
+.tend-intention__option[aria-pressed='true'] {
+  background: var(--color-door-blue);
+  border-color: var(--color-door-blue);
+  font-weight: 600;
+}
+.tend-intention__check {
+  flex-shrink: 0;
+  font-size: var(--text-caption);
+}
+.tend-intention__other {
+  width: 100%;
+  flex: none;
+}
+.tend-intention__note {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-caption);
+  line-height: var(--text-caption--line-height);
+  color: var(--color-ink-soft);
+}
+.tend-intention__done {
+  align-self: flex-start;
+}
+
+/* Compact card controls: a sheet of named actions, anchored to the bottom. */
+.tend-sheet {
+  width: 100%;
+  max-width: none;
+  height: 100%;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--color-ink);
+}
+.tend-sheet[open] {
+  display: flex;
+  align-items: flex-end;
+}
+.tend-sheet::backdrop {
+  background: color-mix(in srgb, var(--color-ink) 40%, transparent);
+}
+.tend-sheet__card {
+  width: 100%;
+  padding: calc(var(--spacing) * 4);
+  padding-bottom: max(calc(var(--spacing) * 4), env(safe-area-inset-bottom));
+  background: var(--color-cream);
+  border-top-left-radius: var(--radius-lg);
+  border-top-right-radius: var(--radius-lg);
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--spacing) * 2);
+}
+.tend-sheet__title {
+  margin: 0;
+  padding: 0 calc(var(--spacing) * 2);
+  font-family: var(--font-sans);
+  font-size: var(--text-caption);
+  line-height: var(--text-caption--line-height);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-ink-soft);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.tend-sheet__actions {
+  display: flex;
+  flex-direction: column;
+}
+.tend-sheet__action {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--spacing) * 3);
+  width: 100%;
+  min-height: 44px;
+  padding: calc(var(--spacing) * 2) calc(var(--spacing) * 2);
+  border: none;
+  border-radius: var(--radius-md);
+  background: transparent;
+  font-family: var(--font-sans);
+  font-size: var(--text-body);
+  line-height: var(--text-body--line-height);
+  color: var(--color-ink);
+  text-align: left;
+  cursor: pointer;
+}
+.tend-sheet__action:hover {
+  background: var(--color-line);
+}
+.tend-sheet__action[aria-pressed='true'] {
+  background: var(--color-door-blue-wash);
+}
+.tend-sheet__check {
+  margin-left: auto;
+  color: var(--color-deep-shade);
+}
+.tend-sheet__cancel {
+  align-self: center;
+  min-height: 44px;
+}
+
+/* Move editor: a bottom sheet on a narrow screen, a dialog on a wide one. */
+
+.tend-move {
+  border: none;
+  padding: 0;
+  color: var(--color-ink);
+  background: transparent;
+}
+.tend-move--popover {
+  position: fixed;
+  inset: auto;
+  margin: 0;
+  width: calc(var(--spacing) * 96);
+  max-width: calc(100% - calc(var(--spacing) * 8));
+  max-height: calc(100dvh - calc(var(--spacing) * 8));
+  overflow: auto;
+  background: var(--color-cream);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--color-ink) 18%, transparent);
+}
+.tend-move--popover::backdrop {
+  background: color-mix(in srgb, var(--color-ink) 28%, transparent);
+}
+.tend-sheet.tend-move .tend-move__card {
+  width: 100%;
+  background: var(--color-cream);
+  border-top-left-radius: var(--radius-lg);
+  border-top-right-radius: var(--radius-lg);
+  padding-bottom: max(calc(var(--spacing) * 4), env(safe-area-inset-bottom));
+}
+.tend-move__card {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--spacing) * 4);
+  padding: calc(var(--spacing) * 4);
+}
+.tend-move__grabber {
+  width: calc(var(--spacing) * 8);
+  height: calc(var(--spacing) * 1);
+  margin: 0 auto;
+  border-radius: var(--radius-full);
+  background: var(--color-line-strong);
+}
+.tend-move__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: calc(var(--spacing) * 3);
+}
+.tend-move__heading {
+  min-width: 0;
+}
+.tend-move__title {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-body-lg);
+  line-height: var(--text-body-lg--line-height);
+  font-weight: 500;
+  color: var(--color-ink);
+}
+.tend-move__meta {
+  margin: calc(var(--spacing) * 1) 0 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-body-sm);
+  line-height: var(--text-body-sm--line-height);
+  color: var(--color-ink-soft);
+}
+.tend-move__section {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--spacing) * 2);
+}
+.tend-move__label {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-caption);
+  line-height: var(--text-caption--line-height);
+  letter-spacing: 0.08em;
+  font-weight: 500;
+  text-transform: uppercase;
+  color: var(--color-ink-soft);
+}
+/* Seven equal weekday controls. Shared by the scheduling sheet and the week glance. */
+.tend-day-options {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: calc(var(--spacing) * 2);
+  container-type: inline-size;
+}
+@container (max-width: 26rem) {
+  .tend-day-options {
+    gap: calc(var(--spacing) * 1);
+  }
+}
+.tend-day-option {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  padding: calc(var(--spacing) * 1) 0;
+  border: 1px solid var(--color-line-strong);
+  border-radius: var(--radius-lg);
+  background: var(--color-white);
+  color: var(--color-ink);
+  cursor: pointer;
+  font-family: var(--font-sans);
+  font-weight: 500;
+  transition: background-color var(--duration-fast) var(--ease-standard);
+}
+/* Hover is for a pointer that can leave. Touch keeps the resting fill. */
+@media (hover: hover) and (pointer: fine) {
+  .tend-day-option:hover:not(:disabled):not([aria-pressed='true']) {
+    background: var(--color-door-blue-wash);
+  }
+}
+.tend-day-option::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: max(100%, 44px);
+  height: max(100%, 44px);
+  transform: translate(-50%, -50%);
+}
+.tend-day-option:focus {
+  outline: none;
+}
+.tend-day-option:focus-visible {
+  outline: 2px solid var(--color-deep-shade);
+  outline-offset: 2px;
+}
+/* The resting border stays. Selection adds the fill and a heavier weight,
+   without a second outline. */
+.tend-day-option[aria-pressed='true'] {
+  background: var(--color-door-blue);
+  color: var(--color-ink);
+  font-weight: 600;
+}
+.tend-day-option:disabled,
+.tend-day-option:disabled:hover {
+  background: var(--color-cream);
+  border-color: var(--color-line-strong);
+  color: var(--color-ink-soft);
+  font-weight: 500;
+  cursor: not-allowed;
+}
+.tend-day-option__name,
+.tend-day-option__meta {
+  max-width: 100%;
+  overflow: hidden;
+  font-size: var(--text-caption);
+  line-height: var(--text-caption--line-height);
+  white-space: nowrap;
+}
+.tend-day-option__meta {
+  font-weight: 400;
+  color: var(--color-ink-soft);
+}
+.tend-day-option[aria-pressed='true'] .tend-day-option__meta {
+  color: var(--color-ink);
+  font-weight: 600;
+}
+.tend-move__unscheduled,
+.tend-move__time {
+  min-height: 44px;
+  padding: calc(var(--spacing) * 2) calc(var(--spacing) * 4);
+  border: 1px solid var(--color-line-strong);
+  border-radius: var(--radius-full);
+  background: var(--color-white);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-size: var(--text-body-sm);
+  line-height: var(--text-body-sm--line-height);
+  cursor: pointer;
+  transition: background-color var(--duration-fast) var(--ease-standard);
+}
+.tend-move__unscheduled:hover,
+.tend-move__time:hover {
+  background: var(--color-door-blue-wash);
+}
+.tend-move__unscheduled {
+  width: 100%;
+}
+.tend-move__unscheduled[aria-pressed='true'],
+.tend-move__unscheduled[aria-pressed='true']:hover,
+.tend-move__time[aria-pressed='true'],
+.tend-move__time[aria-pressed='true']:hover {
+  background: var(--color-door-blue);
+  border-color: var(--color-door-blue);
+  font-weight: 600;
+}
+.tend-move__times {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: calc(var(--spacing) * 2);
+}
+.tend-move__note,
+.tend-move__status {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-body-sm);
+  line-height: var(--text-body-sm--line-height);
+}
+.tend-move__note {
+  color: var(--color-ink-soft);
+}
+.tend-move__status {
+  color: var(--color-ink);
+}
+.tend-move__footer {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: calc(var(--spacing) * 3);
+}
+.tend-move__done {
+  width: 100%;
+}
+.tend-move__links {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: calc(var(--spacing) * 4);
+}
+.tend-move__duplicate {
+  color: var(--color-deep-shade);
+  font-weight: 500;
+}
+.tend-move__delete,
+.tend-button-ghost.tend-move__delete:hover {
+  color: var(--color-brick);
+  font-weight: 500;
+}
+.tend-move--popover .tend-move__footer {
+  flex-direction: row-reverse;
+  justify-content: space-between;
+  align-items: center;
+}
+.tend-move--popover .tend-move__done {
+  width: auto;
+  min-width: calc(var(--spacing) * 20);
+}
+.tend-move--popover .tend-move__links {
+  justify-content: flex-start;
+}
+.tend-duplicate .tend-move__heading {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--spacing) * 1);
+}
+.tend-duplicate .tend-move__footer,
+.tend-move--popover.tend-duplicate .tend-move__footer {
+  flex-direction: column;
+  align-items: stretch;
+}
+.tend-move--popover.tend-duplicate .tend-move__done {
+  width: 100%;
+}
+
+.tend-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.tend-send-week {
+  min-width: 0;
+}
+
+.tend-send-week > .tend-button-ghost {
+  flex-shrink: 0;
+  min-height: 44px;
+  white-space: nowrap;
+}
+
+.tend-send-week__form {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: calc(var(--spacing) * 2);
+}
+
+.tend-send-week__prompt {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-body);
+  line-height: var(--text-body--line-height);
+  color: var(--color-ink);
+}
+
+.tend-send-week__row {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: flex-start;
+  column-gap: calc(var(--spacing) * 6);
+}
+
+.tend-send-week__field {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.tend-send-week__field .tend-input {
+  flex: none;
+  width: 20rem;
+  max-width: 100%;
+}
+
+.tend-send-week__hint {
+  max-width: 20rem;
+}
+
+.tend-send-week__actions {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--spacing) * 6);
+}
+
+.tend-send-week__submit {
+  gap: calc(var(--spacing) * 2);
+  white-space: nowrap;
+}
+.tend-send-week__submit:disabled {
+  opacity: 0.7;
+}
+
+.tend-send-week__cancel {
+  flex-shrink: 0;
+  height: calc(var(--spacing) * 12);
+  font-size: var(--text-body);
+  line-height: var(--text-body--line-height);
+  font-weight: 400;
+  color: var(--color-ink-soft);
+  text-decoration: none;
+}
+.tend-send-week__cancel:hover {
+  color: var(--color-ink);
+  text-decoration: underline;
+}
+.tend-send-week__cancel:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  text-decoration: none;
+}
+
+.tend-send-week__spinner {
+  width: calc(var(--spacing) * 4);
+  height: calc(var(--spacing) * 4);
+  border: 2px solid var(--color-white);
+  border-right-color: transparent;
+  border-radius: var(--radius-full);
+  animation: tend-spin 800ms linear infinite;
+}
+
+@keyframes tend-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.tend-send-week__error {
+  margin: calc(var(--spacing) * 1) 0 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-body-sm);
+  line-height: var(--text-body-sm--line-height);
+  color: var(--color-ink);
+}
+
+.tend-send-week__success {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.tend-send-week__waitlist {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-family: var(--font-sans);
+  font-size: var(--text-body);
+  line-height: var(--text-body--line-height);
+  font-weight: 500;
+  color: var(--color-deep-shade);
+  text-decoration: none;
+}
+.tend-send-week__waitlist:hover {
+  color: var(--color-ink);
+}
+
+@media (max-width: 760px) {
+  .tend-flow__footer--week .tend-flow__footer-inner {
+    flex-wrap: nowrap;
+    align-items: center;
+  }
+  .tend-send-week {
+    flex: 0 1 auto;
+  }
+  .tend-flow__footer--week .tend-flow__footer-inner:has(.tend-send-week__form) {
+    flex-wrap: wrap;
+    align-items: flex-start;
+  }
+  .tend-send-week:has(.tend-send-week__form) {
+    flex: 1 1 100%;
+  }
+  .tend-send-week__form {
+    width: 100%;
+  }
+  .tend-send-week__row {
+    width: 100%;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: calc(var(--spacing) * 2) calc(var(--spacing) * 6);
+  }
+  .tend-send-week__field {
+    flex: 1 1 100%;
+  }
+  .tend-send-week__field .tend-input {
+    width: 100%;
+  }
+  .tend-send-week__hint {
+    max-width: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tend-flow__progress-fill,
+  .tend-glance-card__chevron {
+    transition: none;
+  }
+}
+
+.tend-inline-link {
+  flex-shrink: 0;
+  min-height: calc(var(--spacing) * 11);
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-sans);
+  font-size: var(--text-body-sm);
+  line-height: var(--text-body-sm--line-height);
+  font-weight: 500;
+  color: var(--color-deep-shade);
+  text-decoration: none;
+}
+.tend-inline-link:hover {
+  color: var(--color-ink);
+}
+
+.tend-goal-editor {
+  width: min(100%, calc(var(--spacing) * 96));
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  margin: 0 0 0 auto;
+  padding: 0;
+  border: none;
+  overflow: hidden;
+  background: var(--color-cream);
+  color: var(--color-ink);
+}
+.tend-goal-editor--full {
+  width: 100%;
+  margin: 0;
+}
+.tend-goal-editor[open] {
+  display: flex;
+  flex-direction: column;
+}
+.tend-goal-editor::backdrop {
+  background: color-mix(in srgb, var(--color-ink) 40%, transparent);
+}
+.tend-goal-editor__frame {
+  display: flex;
+  flex-direction: column;
+  height: calc(100% - var(--keyboard-inset, 0px));
+  min-height: 0;
+  background: var(--color-cream);
+  color: var(--color-ink);
+}
+.tend-goal-editor__header,
+.tend-goal-editor__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: calc(var(--spacing) * 4);
+  flex-shrink: 0;
+}
+.tend-goal-editor__header {
+  padding: calc(var(--spacing) * 8) calc(var(--spacing) * 8) calc(var(--spacing) * 6);
+  border-bottom: 1px solid var(--color-line);
+}
+.tend-goal-editor__header .tend-icon-button {
+  width: calc(var(--spacing) * 11);
+  height: calc(var(--spacing) * 11);
+}
+.tend-goal-editor__footer {
+  justify-content: flex-end;
+  padding: calc(var(--spacing) * 4) calc(var(--spacing) * 8);
+  padding-bottom: max(calc(var(--spacing) * 4), env(safe-area-inset-bottom));
+  border-top: 1px solid var(--color-line);
+}
+.tend-goal-editor__title {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: var(--text-title);
+  line-height: var(--text-title--line-height);
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  color: var(--color-ink);
+}
+.tend-goal-editor__title:focus,
+.tend-goal-editor__title:focus-visible {
+  outline: none;
+}
+.tend-goal-editor__body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--spacing) * 8);
+  padding: calc(var(--spacing) * 8);
+}
+.tend-goal-editor__body .tend-input {
+  scroll-margin-block: calc(var(--spacing) * 4);
+}
+.tend-goal-editor__field {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--spacing) * 2);
+  min-width: 0;
+}
+.tend-goal-editor__actions {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--spacing) * 4);
+  min-width: 0;
+}
+.tend-goal-editor__label {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-body);
+  line-height: var(--text-body--line-height);
+  font-weight: 400;
+  color: var(--color-ink);
+}
+.tend-goal-editor__section {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: var(--text-heading);
+  line-height: var(--text-heading--line-height);
+  font-weight: 400;
+  color: var(--color-ink);
+}
+.tend-goal-editor__list {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--spacing) * 3);
+  min-width: 0;
+}
+.tend-goal-editor__action,
+.tend-goal-editor__add {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) calc(var(--spacing) * 11);
+  align-items: start;
+  column-gap: calc(var(--spacing) * 3);
+  row-gap: calc(var(--spacing) * 2);
+  min-width: 0;
+}
+.tend-goal-editor__action-label {
+  min-width: 0;
+}
+.tend-goal-editor__action-label .tend-input,
+.tend-goal-editor__add .tend-input,
+.tend-goal-editor__field .tend-input {
+  width: 100%;
+  min-width: 0;
+  flex: none;
+}
+.tend-goal-editor__action .tend-goal-editor__error,
+.tend-goal-editor__add .tend-goal-editor__error {
+  grid-column: 1 / -1;
+}
+.tend-goal-editor__remove {
+  width: calc(var(--spacing) * 11);
+  height: calc(var(--spacing) * 11);
+}
+.tend-goal-editor__actions > .tend-button-ghost,
+.tend-goal-editor__cancel {
+  min-height: 44px;
+  font-size: var(--text-body);
+  line-height: var(--text-body--line-height);
+}
+.tend-goal-editor__cancel {
+  height: calc(var(--spacing) * 12);
+  padding: 0 calc(var(--spacing) * 3);
+  font-weight: 400;
+}
+.tend-goal-editor__error {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-body-sm);
+  line-height: var(--text-body-sm--line-height);
+  color: var(--color-ink-soft);
+}
+.tend-goal-editor__status {
+  margin: 0;
+  padding: calc(var(--spacing) * 6);
+  font-family: var(--font-sans);
+  font-size: var(--text-body);
+  line-height: var(--text-body--line-height);
+  color: var(--color-ink-soft);
+}
+
+@media (max-width: 760px) {
+  .tend-goal-editor__header,
+  .tend-goal-editor__body,
+  .tend-goal-editor__footer {
+    padding-left: calc(var(--spacing) * 6);
+    padding-right: calc(var(--spacing) * 6);
+  }
+  .tend-goal-editor__header {
+    padding-top: max(calc(var(--spacing) * 8), env(safe-area-inset-top));
+  }
+  .tend-goal-editor__header .tend-flow__back-link {
+    font-size: var(--text-body);
+    line-height: var(--text-body--line-height);
+  }
+}
+
+/* Week at a glance. Dots follow focusPalette order: 0 is --color-focus-1. */
+
+/* Stays at the top of the step once the title has scrolled away, so the
+   action list can keep moving while the week stays one tap away. The pin
+   reaches into the body padding. The card grows with its content and does
+   not scroll on its own. */
+.tend-glance-pin {
+  position: sticky;
+  top: calc(var(--spacing) * -6);
+  z-index: 4;
+  flex-shrink: 0;
+  margin-inline: calc(var(--spacing) * -6);
+  padding: calc(var(--spacing) * 6) calc(var(--spacing) * 6) 0;
+  background: var(--color-cream);
+}
+.tend-glance-card {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--spacing) * 4);
+  padding: calc(var(--spacing) * 4);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-lg);
+  background: var(--color-white);
+}
+.tend-glance-card__header {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: calc(var(--spacing) * 3);
+  cursor: pointer;
+}
+.tend-glance-card__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: calc(var(--spacing) * 3);
+}
+.tend-glance-card__title {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-body);
+  line-height: var(--text-body--line-height);
+  font-weight: 600;
+  color: var(--color-ink);
+}
+.tend-glance-card__toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: calc(var(--spacing) * 1);
+  flex-shrink: 0;
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font-family: var(--font-sans);
+  font-size: var(--text-body);
+  line-height: var(--text-body--line-height);
+  font-weight: 600;
+  color: var(--color-deep-shade);
+  cursor: pointer;
+}
+.tend-glance-card__toggle:focus {
+  outline: none;
+}
+.tend-glance-card__toggle:focus-visible {
+  outline: 2px solid var(--color-deep-shade);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+.tend-glance-card__chevron {
+  transition: transform var(--default-transition-duration) var(--ease-standard);
+}
+.tend-glance-card__chevron--open {
+  transform: rotate(180deg);
+}
+.tend-glance-card__summary {
+  align-self: flex-start;
+  margin: 0;
+  padding: calc(var(--spacing) * 1) calc(var(--spacing) * 3);
+  border-radius: var(--radius-full);
+  background: var(--color-door-blue-soft);
+  font-family: var(--font-sans);
+  font-size: var(--text-caption);
+  line-height: var(--text-caption--line-height);
+  color: var(--color-ink-soft);
+}
+.tend-glance-card__panel {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--spacing) * 4);
+}
+.tend-glance-card__panel[hidden] {
+  display: none;
+}
+/* The glance stays a compact rectangle. The scheduling sheet uses the
+   shared 16px radius on the same control. */
+.tend-glance-card .tend-day-option {
+  border-radius: var(--radius-md);
+}
+.tend-glance-detail {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--spacing) * 2);
+}
+.tend-glance-detail__title {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-body-sm);
+  line-height: var(--text-body-sm--line-height);
+  font-weight: 600;
+  color: var(--color-ink);
+}
+.tend-glance-detail__empty {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-body-sm);
+  line-height: var(--text-body-sm--line-height);
+  color: var(--color-ink-soft);
+}
+.tend-glance-detail__plans {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--spacing) * 2);
+}
+.tend-glance-detail__plan {
+  display: flex;
+  align-items: flex-start;
+  gap: calc(var(--spacing) * 1);
+}
+.tend-glance-detail__label {
+  min-width: 0;
+  overflow-wrap: break-word;
+  font-family: var(--font-sans);
+  font-size: var(--text-caption);
+  line-height: var(--text-caption--line-height);
+  color: var(--color-ink);
+}
+.tend-glance-detail__when {
+  color: var(--color-ink-soft);
+}
+.tend-focus-dot {
+  width: calc(var(--spacing) * 2);
+  height: calc(var(--spacing) * 2);
+  margin-top: calc(var(--spacing) * 1);
+  flex-shrink: 0;
+  border-radius: var(--radius-full);
+  background: var(--color-ink);
+}
+.tend-focus-dot[data-focus-color='0'] { background: var(--color-focus-1); }
+.tend-focus-dot[data-focus-color='1'] { background: var(--color-focus-2); }
+.tend-focus-dot[data-focus-color='2'] { background: var(--color-focus-3); }
+.tend-focus-dot[data-focus-color='3'] { background: var(--color-focus-4); }
+.tend-focus-dot[data-focus-color='4'] { background: var(--color-focus-5); }
+.tend-focus-dot[data-focus-color='5'] { background: var(--color-focus-6); }
+.tend-glance-detail .tend-room-marker {
+  margin-top: calc(var(--spacing) * 1);
+}

@@ -1,0 +1,37 @@
+{
+  "name": "@tend/ui-tokens",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Tend design tokens: one TypeScript source, generated CSS for web.",
+  "type": "module",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "react-native": "./src/index.ts",
+      "default": "./src/index.ts"
+    },
+    "./theme.css": {
+      "style": "./css/theme.css",
+      "default": "./css/theme.css"
+    },
+    "./variables.css": {
+      "style": "./css/variables.css",
+      "default": "./css/variables.css"
+    }
+  },
+  "engines": {
+    "node": ">=22.18"
+  },
+  "scripts": {
+    "css": "node --experimental-strip-types scripts/build-css.ts",
+    "css:check": "node --experimental-strip-types scripts/build-css.ts --check",
+    "contrast": "node --experimental-strip-types scripts/check-contrast.ts",
+    "test": "node --experimental-strip-types scripts/check-design-baseline.ts && node --experimental-strip-types scripts/check-contrast.ts && node --experimental-strip-types scripts/build-css.ts --check",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^22.18.0",
+    "typescript": "^5.6.3"
+  }
+}

@@ -1,0 +1,37 @@
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: tend
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres -d tend']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build:
+      context: ../..
+      dockerfile: apps/api/Dockerfile
+    ports:
+      - '3000:3000'
+    environment:
+      NODE_ENV: development
+      PORT: 3000
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/tend?schema=public
+      THROTTLE_TTL: 60
+      THROTTLE_LIMIT: 100
+      IDEMPOTENCY_TTL_SECONDS: 86400
+      LOG_LEVEL: info
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  postgres_data:

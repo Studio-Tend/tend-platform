@@ -1,0 +1,34 @@
+---
+description: Tend web product design guardrails; preserve accepted weekly-planner refinements.
+globs: apps/web/**/*.tsx, apps/web/**/*.ts, apps/web/**/*.css, packages/ui-tokens/**
+alwaysApply: false
+---
+
+# Tend product UI rules
+
+Read `docs/design-system.md` before changing a component, token or stylesheet.
+`packages/ui-tokens/src/tokens.ts` owns token values; generated CSS must never be edited by hand.
+
+**Never use an external Claude design-system mockup, a historical brand guide or this rule file to silently override the current app.** When they differ, compare against the currently shipped planner, explain the tradeoff and obtain an explicit design decision.
+
+## Protected refinements
+
+- Current type scale: Fraunces display 44/50, title 32/38, heading 24/31 (regular). Statement 20/28. Supporting Inter 18/28, 16/24, 14/20, 12/16.
+- Radius `lg` is 16px, `md` 8px. Do not globally change to 12px.
+- Ink `#17161F`, Ink-soft `#4C5677` for secondary text; deep shade `#5C6C97` for primary fill. `lineStrong` is `#868B9E` on controls. Use tokens, not raw hex in components.
+- Preserve the planner's primary hover to Ink and **readable neutral outlined disabled state**. Ghost buttons are Ink soft. Outlined secondary buttons have a distinct purpose in confirmation dialogs.
+- Existing make-room and life-item surfaces use translucent `doorBlueWash`, not a solid tinted background. The ✦ marker is Ink soft, not a focus color.
+- Focus palette `focus1`–`focus6` is for **small labeled graphical markers only**. The week glance and the step 3 goal titles use them as dots beside the focus name. Do not recolor goal cards, action text, buttons, or life items. Life items keep the ✦ marker. The optional `doorBlueSoft` token is not approval for a bulk migration.
+- Keep the recent week-board action typography, wrapped labels, roomy day columns, quieter reset action, sticky mobile day strip, undo and accessible editing affordances.
+
+## How to change a design
+
+1. State the user problem and likely emotion; distinguish a usability defect from personal taste.
+2. Inspect the existing CSS and component before creating new variants. Preserve intentional states (base, hover, focus, disabled, selected, busy, empty and reduced motion).
+3. Design around the main action in each **context**, not a global 'one filled button per entire screen' rule. Do not demote Add or dialog safety actions without testing that context.
+4. Apply tokens and approved contrast pairings. Selected states need a non-color cue. Touch/keyboard controls need 44px targets, visible focus and no hover-only required action.
+5. Don't use warning red for overdue or missed wellness behaviors. Empty time is legitimate.
+6. Regenerate CSS with `pnpm --filter @tend/ui-tokens css`; run token tests, app tests, lint and typecheck. For changed token baselines update `check-design-baseline.ts` **only** after a deliberate design review.
+7. Attach before/after desktop, mobile and relevant component-state screenshots to visual PRs.
+
+See `docs/design-system.md` for actual values and decisions. Brand/social artwork is not a product UI specification.

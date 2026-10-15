@@ -1,0 +1,12 @@
+---
+description: Read the running dev server URL from the terminal before opening the app. Do not assume a port.
+alwaysApply: true
+---
+
+# Dev server URL
+
+Before opening the app in a browser, read the dev terminal and use the `Local:` URL printed there.
+
+If more than one server is running, use the terminal the person has open and say which port that was.
+
+Do not assume port 3000 or 3001. Next moves to the next free port when the usual one is already taken.
